@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Unlock Tool</title>
+    <script src="./scripts/bsv.browser.min.js"></script>
+    <script src="./scripts/message.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], 
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        .button-group {
+            margin-bottom: 20px;
+        }
+        
+        .reload-button {
+            background-color: #2196F3;
+            margin-right: 10px;
+        }
+        
+        .reload-button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bulk Unlock Tool!</h1>
+
+    <div class="form-group">
+        <label for="privateKeyWIF">Private Key (WIF):</label>
+        <input type="text" id="privateKeyWIF" placeholder="Enter your private key in WIF format">
+    </div>
+
+    <div class="form-group">
+        <label for="receiveAddress">Receive Address:</label>
+        <input type="text" id="receiveAddress" placeholder="Enter the address to receive unlocked funds">
+    </div>
+
+    <div class="form-group">
+        <label for="identityAddress">Identity Address:</label>
+        <input type="text" id="identityAddress" placeholder="Enter the identity address">
+    </div>
+
+    <button onclick="startUnlock()">Start Bulk Unlock</button>
+
+    <div id="output"></div>
+
+    <script id="bsv-script" src="./scripts/bsv.browser.min.js"></script>
+    <script id="message-script" src="./scripts/message.js"></script>
+    <script id="wallet-script" src="./scripts/SHUAllet_plugin.js"></script>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += message + '\n';
+            console.log(message);
+        }
+
+        async function startUnlock() {
+            const output = document.getElementById('output');
+            output.textContent = ''; // Clear previous output
+
+            const config = {
+                privateKeyWIF: document.getElementById('privateKeyWIF').value,
+                receiveAddress: document.getElementById('receiveAddress').value,
+                identityAddress: document.getElementById('identityAddress').value
+            };
+
+            // Validate inputs
+            if (!config.privateKeyWIF || !config.receiveAddress || !config.identityAddress) {
+                log('Error: All fields are required');
+                return;
+            }
+
+            try {
+                log('Starting bulk unlock process...');
+                log(`From block ${config.fromHeight} to ${config.toHeight}`);
+                log(`Identity address: ${config.identityAddress}`);
+                log(`Receive address: ${config.receiveAddress}`);
+                
+                await bulkUnlock(
+                    config.privateKeyWIF,
+                    config.receiveAddress,
+                    config.identityAddress
+                );
+                
+                log('Bulk unlock process completed');
+            } catch (error) {
+                log('Error during bulk unlock: ' + error.message);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html> 
